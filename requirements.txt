@@ -3,3 +3,5 @@ beautifulsoup4
 playwright
 gspread
 oauth2client
+openai
+python-dotenv

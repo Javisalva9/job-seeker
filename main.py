@@ -1,3 +1,18 @@
+import os
+from dotenv import load_dotenv
+from openrouter import ask_openrouter
+
+# Load .env file
+load_dotenv()
+
+# Test if the API key is loaded correctly
+if not os.getenv("OPENROUTER_API_KEY"):
+    raise ValueError("❌ Missing OpenRouter API key! Set it in a .env file.")
+
+# Test OpenRouter API
+response = ask_openrouter("Do you believe you can compare my cv and goals to job offers and make a point system so I can sort it on a sheet ?")
+print(response)
+""" 
 import json
 import time
 import argparse
@@ -112,4 +127,4 @@ def main():
     save_to_google_sheets(all_jobs, user.spreadsheet_id)
 
 if __name__ == "__main__":
-    main()
+    main() """
