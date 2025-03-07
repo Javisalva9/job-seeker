@@ -19,7 +19,6 @@ def get_user():
 def main():
     user = get_user()
     all_jobs = find_all(user)
-    print("Scraped jobs:", all_jobs)
     evaluated_jobs = evaluate_all_jobs(user, all_jobs)
     save_to_google_sheets(evaluated_jobs, user.spreadsheet_id)
 

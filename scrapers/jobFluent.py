@@ -4,13 +4,16 @@ from job_schema import JobFields
 from typing import List
 
 
-def scrape_jobfluent():
-    url = 'https://www.jobfluent.com/es/empleos-remoto'
+def get_jobs(user):
+    url = f'https://www.jobfluent.com/es/empleos-remoto?q={user.search_query}'
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
 
     jobs: List[JobFields] = []
-    for job_card in soup.find_all('div', class_='panel-offer'):
+           
+    for i, job_card in enumerate(soup.find_all('div', class_='panel-offer')):
+        if i >= 3:
+            break
         title = job_card.find('h3').a.text.strip()
         salary_tag = job_card.find('span', class_='salary')
         salary = salary_tag.text.strip() if salary_tag else 'N/A'
@@ -36,20 +39,13 @@ def scrape_jobfluent():
             'salary_range': salary,
             'slug': 'N/A'
         })
-
-        for job in jobs:
-            print(f"Title: {job['title']}")
-            print(f"company: {job['company']}")
-            print(f"locations: {job['locations']}")
-            print(f"Salary: {job['salary_range']}")
-            print(f"Link: {job['url']}")
-            print('-' * 20)
+    
 
     return jobs
 
 
 if __name__ == '__main__':
-    job_listings = scrape_jobfluent()
+    job_listings = get_jobs()
     for job in job_listings:
         print(f"Title: {job['title']}")
         print(f"description: {job['description']}")

@@ -29,6 +29,7 @@ def save_to_google_sheets(jobs, spreadsheet_id):
             job.get("url", ""),
             job.get("match_rating", ""),
             job.get("match_comment", ""),
+            str(job.get("sources", "")),
         ]
         rows.append(row)
 

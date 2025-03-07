@@ -19,12 +19,7 @@ def find_all(user, package_name="scrapers"):
     for scraper_name, get_jobs in scrapers:
         jobs = get_jobs(user)
         for job in jobs:
-            # Annotate each job with its source.
-            if "sources" in job:
-                if scraper_name not in job["sources"]:
-                    job["sources"].append(scraper_name)
-            else:
-                job["sources"] = [scraper_name]
+            job["sources"] = [scraper_name]
             all_jobs.append(job)
     unique_jobs = merge_duplicate_jobs(all_jobs)
     return unique_jobs
