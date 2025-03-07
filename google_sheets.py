@@ -13,7 +13,7 @@ def save_to_google_sheets(jobs, spreadsheet_id):
     sheet.clear()
 
     # Add headers
-    headers = ["Title", "Company", "Description", "Applicants", "Locations", "Salary Range", "URL"]
+    headers = ["Title", "Company", "Description", "Applicants", "Locations", "Salary Range", "URL", "Match Rating", "Match Comment"]
     sheet.append_row(headers)
 
     # 🛠 **Fix: Batch Writing Instead of One-by-One** 🛠
@@ -27,6 +27,8 @@ def save_to_google_sheets(jobs, spreadsheet_id):
             job.get("locations", ""),
             job.get("salary_range", ""),
             job.get("url", ""),
+            job.get("match_rating", ""),
+            job.get("match_comment", ""),
         ]
         rows.append(row)
 

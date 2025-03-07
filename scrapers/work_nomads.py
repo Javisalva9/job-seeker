@@ -1,17 +1,21 @@
-SCRAPER_NAME = "WorkNomads"
-
 from playwright.sync_api import sync_playwright
 from job_schema import JobFields
 
 def formatJobDetails(page, source) -> JobFields:
+    locations_raw = source.get("locations", [])
+    if isinstance(locations_raw, list):
+        locations_str = ", ".join(locations_raw)
+    else:
+        locations_str = str(locations_raw).strip()
+
     job_info: JobFields = {
         "title": source.get("title", "").strip(),
         "company": source.get("company", "").strip(),
         "description": "",  # we'll fill this in
         "url": page.url,
         "apply_url": source.get("apply_url", "").strip(),
-        "applicants": source.get("number_of_applicants", "").strip(),
-        "locations": source.get("locations", "").strip(),
+        "applicants": source.get("number_of_applicants", 0),
+        "locations": locations_str,
         "salary_range": source.get("salary_range", "").strip(),
         "slug": source.get("slug", "").strip()
     }
@@ -55,7 +59,9 @@ def get_jobs(user):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
-        for hit in jobs_data:
+        for i, hit in enumerate(jobs_data):
+            if i >= 3:
+                break
             source = hit.get("_source", {})
             slug = source.get("slug")
             if slug:

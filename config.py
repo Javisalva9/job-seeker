@@ -3,7 +3,7 @@ class User:
         self.name = name
         self.search_query = search_query
         self.spreadsheet_id = spreadsheet_id
-        work_preferences = work_preferences
+        self.work_preferences = work_preferences
 
 # Replace "YOUR_SPREADSHEET_ID" with the actual ID
 Miguel = User(name="Miguel", search_query="nodejs", spreadsheet_id="1tRxmT2ZTvL5Zagh1hc44lFthQswrqNrh86uUVu636yw", 
