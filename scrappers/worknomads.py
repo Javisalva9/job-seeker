@@ -1,3 +1,5 @@
+SCRAPER_NAME = "WorkNomads"
+
 from playwright.sync_api import sync_playwright
 from job_schema import JobFields
 
@@ -22,9 +24,11 @@ def formatJobDetails(page, source) -> JobFields:
             if "job-title" not in parent_classes and "job-company" not in parent_classes:
                 filtered_desc.append(el.inner_text().strip())
         job_info["description"] = "\n\n".join(filtered_desc) if filtered_desc else "❌ Description not found"
+    else:
+        job_info["description"] = "❌ Description not found"
     return job_info
 
-def getWorkNomads(user):
+def get_jobs(user):
     jobs_data = [] 
 
     def handle_response(response):
@@ -37,7 +41,7 @@ def getWorkNomads(user):
                 print("Error parsing JSON:", e)
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         page.on("response", handle_response)
         search_url = f"https://www.workingnomads.com/jobs?location=anywhere,europe&tag={user.search_query}"
@@ -47,8 +51,9 @@ def getWorkNomads(user):
         browser.close()
 
     workNomadsJobs = []
+
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         for hit in jobs_data:
             source = hit.get("_source", {})
