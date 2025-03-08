@@ -1,6 +1,7 @@
 import os
 import openai
 import re
+import json
 
 # Ensure your OpenRouter API key is set in your environment.
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
@@ -27,7 +28,7 @@ def ask_openrouter(prompt):
                 model=current_model,
                 messages=[{"role": "user", "content": prompt}]
             )
-            return response.choices[0].message.content
+            return response.choices[0].message.content, current_model
         except Exception as e:
             print(f"Model {current_model} failed with error: {e}. Trying next model...")
             return _try_models(models[1:])
@@ -35,12 +36,7 @@ def ask_openrouter(prompt):
     return _try_models(fallback_models)
 
 MATCH_AND_RATE_QUERY = (
-    "1. Input to AI: “Here is the developer profile above. Below is a job description. "
-    "Compare the job description’s requirements with the developer’s experience. "
-    "Rate the match on a scale from 0 to 100 and provide a concise explanation for why you assigned that score.”\n"
-    "2. Output from AI (you should directly write this as follows without any style):\n"
-    "   - Match Rating (0–100): Numeric value\n"
-    "   - Comment: Short concret bullet points on compatibility and gaps\n"
+   "Analyze the developer profile and job description below. Perform the following tasks systematically:\n\n1. REQUIREMENT ANALYSIS:\n   - List all explicit requirements from the job description\n   - Identify preferred/bonus qualifications separately\n\n2. EXPERIENCE MAPPING:\n   - Match developer's skills/experience to required qualifications\n   - Map developer's skills to bonus qualifications\n   - Identify clear gaps\n\n3. SCORING (1-10 scale):\n   10 = All required + all bonus qualifications\n    7-9 = All required + some bonus\n    5-6 = All required qualifications\n    3-4 = Some required qualifications\n    1-2 = No relevant qualifications\n    (Adjust ±1 for years of experience relevance)\n\n4. Generate JSON output with:\n   - Numerical score based on above rubric\n   - 3-5 strictly concise bullet points\n   - Use format: [±] [Category] [Details] (e.g., [-] Cloud: Missing AWS experience)\n   - Prioritize most impactful factors\n\nJSON Output Format:\n{\n  \"rating\": [1-10],\n  \"comment\": [\n    \"✅ [Category] [Brief Detail]\",\n    \"❌ [Category] [Missing Requirement]\",\n    \"🤔 [Category] [Partial Match]\"\n  ]\n}\n\nMaintain absolute brevity - maximum 15 words per bullet. Focus on factual matches/gaps without commentary."
 )
 
 import re
@@ -52,26 +48,25 @@ def evaluate_job_match(user, job, query=MATCH_AND_RATE_QUERY):
         f"Job Description:\n{job.get('description', '')}\n\n"
         "Evaluate:"
     )
-    response = ask_openrouter(prompt)
-    rating = 0
-    comment = ""
-    if response:
-        response = re.sub(r"\*+", "", response)
-        rating_match = re.search(r"Match Rating\s*\(0[–-]100\):\s*(\d+)", response)
-        comment_match = re.search(r"Comment:\s*(.+)", response, re.DOTALL)
-        if rating_match:
-            rating = int(rating_match.group(1))
-        if comment_match:
-            comment = comment_match.group(1).strip()
-    return rating, comment
+    response_content, model_used = ask_openrouter(prompt)
+    response = clean_json_response(response_content)
+    rating = response.get("rating", 0)
+    comment = response.get("comment", [])
+    comment = "\n".join(comment)
+    return rating, comment, model_used
 
 def evaluate_all_jobs(user, jobs, query=MATCH_AND_RATE_QUERY):
     evaluated_jobs = []
     for job in jobs:
-        if job.get("company") != 'Hostaway':
-            continue
-        rating, comment = evaluate_job_match(user, job, query)
+        rating, comment, model_used = evaluate_job_match(user, job, query)
         job["match_rating"] = rating
         job["match_comment"] = comment
+        job["ai_model"] = model_used
         evaluated_jobs.append(job)
     return sorted(evaluated_jobs, key=lambda j: j["match_rating"], reverse=True)
+
+def clean_json_response(raw_response):
+    # Remove Markdown code blocks and whitespace
+    cleaned = re.sub(r'^.*?{', '{', raw_response, flags=re.DOTALL)
+    cleaned = re.sub(r'}\s*`*$', '}', cleaned)
+    return json.loads(cleaned)
