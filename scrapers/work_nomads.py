@@ -1,5 +1,6 @@
 from playwright.sync_api import sync_playwright
 from job_schema import JobFields
+import os 
 
 def formatJobDetails(page, source) -> JobFields:
     locations_raw = source.get("locations", [])
@@ -8,12 +9,15 @@ def formatJobDetails(page, source) -> JobFields:
     else:
         locations_str = str(locations_raw).strip()
 
+    # Get the apply_url and determine which URL to use as display_url
+    apply_url = source.get("apply_url", "").strip()
+    display_url = apply_url if apply_url else page.url
+
     job_info: JobFields = {
         "title": source.get("title", "").strip(),
         "company": source.get("company", "").strip(),
         "description": "",  # we'll fill this in
-        "url": page.url,
-        "apply_url": source.get("apply_url", "").strip(),
+        "url": display_url,
         "applicants": source.get("number_of_applicants", 0),
         "locations": locations_str,
         "salary_range": source.get("salary_range", "").strip(),
@@ -42,14 +46,13 @@ def get_jobs(user):
                 hits = data.get("hits", {}).get("hits", [])
                 jobs_data.extend(hits)
             except Exception as e:
-                print("Error parsing JSON:", e)
+                print("Error parsing JSON:")
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         page.on("response", handle_response)
         search_url = f"https://www.workingnomads.com/jobs?location=anywhere,europe&tag={user.search_query}"
-        print(f"🔎 Searching for: {user.search_query}")
         page.goto(search_url)
         page.wait_for_load_state("networkidle")
         browser.close()
@@ -60,13 +63,12 @@ def get_jobs(user):
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         for i, hit in enumerate(jobs_data):
-            if i >= 3:
+            if i >= 3 and os.environ.get("TEST_MODE") :
                 break
             source = hit.get("_source", {})
             slug = source.get("slug")
             if slug:
                 job_url = f"https://www.workingnomads.com/remote-{user.search_query}-jobs?job={slug}"
-                print(f"Scraping: {job_url}")
                 page.goto(job_url)
                 page.wait_for_load_state("networkidle")
                 job_details = formatJobDetails(page, source)

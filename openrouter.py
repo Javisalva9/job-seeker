@@ -1,7 +1,11 @@
 import os
+from dotenv import load_dotenv
 import openai
 import re
 import json
+
+# Load environment variables first
+load_dotenv()
 
 # Ensure your OpenRouter API key is set in your environment.
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
@@ -28,9 +32,15 @@ def ask_openrouter(prompt):
                 model=current_model,
                 messages=[{"role": "user", "content": prompt}]
             )
-            return response.choices[0].message.content, current_model
+            content = response.choices[0].message.content
+            parsed_response = clean_json_response(content)
+            # Validate required fields exist
+            if not all(key in parsed_response for key in ("rating", "comment")):
+                raise ValueError("Missing required fields in JSON response")
+            return parsed_response, current_model
         except Exception as e:
-            print(f"Model {current_model} failed with error: {e}. Trying next model...")
+            error_type = "API call" if isinstance(e, openai.APIError) else "JSON validation"
+            print(f"Model {current_model} failed ({error_type} error): {str(e)[:100]}")
             return _try_models(models[1:])
     
     return _try_models(fallback_models)
@@ -48,10 +58,15 @@ def evaluate_job_match(user, job, query=MATCH_AND_RATE_QUERY):
         f"Job Description:\n{job.get('description', '')}\n\n"
         "Evaluate:"
     )
-    response_content, model_used = ask_openrouter(prompt)
-    response = clean_json_response(response_content)
-    rating = response.get("rating", 0)
-    comment = response.get("comment", [])
+    try:
+        response, model_used = ask_openrouter(prompt)
+        rating = response.get("rating", 0)
+        comment = response.get("comment", [])
+    except (ValueError, Exception) as e:
+        print(f"Failed to get valid response")
+        rating = 0
+        comment = ["AI evaluation failed"]
+        model_used = "error"
     comment = "\n".join(comment)
     return rating, comment, model_used
 
@@ -59,14 +74,17 @@ def evaluate_all_jobs(user, jobs, query=MATCH_AND_RATE_QUERY):
     evaluated_jobs = []
     for job in jobs:
         rating, comment, model_used = evaluate_job_match(user, job, query)
-        job["match_rating"] = rating
-        job["match_comment"] = comment
+        job["score"] = rating
+        job["comment"] = comment
         job["ai_model"] = model_used
         evaluated_jobs.append(job)
-    return sorted(evaluated_jobs, key=lambda j: j["match_rating"], reverse=True)
+    return sorted(evaluated_jobs, key=lambda j: j["score"], reverse=True)
 
 def clean_json_response(raw_response):
     # Remove Markdown code blocks and whitespace
     cleaned = re.sub(r'^.*?{', '{', raw_response, flags=re.DOTALL)
     cleaned = re.sub(r'}\s*`*$', '}', cleaned)
-    return json.loads(cleaned)
+    try:
+        return json.loads(cleaned)
+    except json.JSONDecodeError:
+        raise ValueError("Failed to parse JSON response")

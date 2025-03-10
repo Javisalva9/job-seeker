@@ -18,6 +18,8 @@ def find_all(user, package_name="scrapers"):
     all_jobs = []
     for scraper_name, get_jobs in scrapers:
         jobs = get_jobs(user)
+        print("✅ Finished scraping for", scraper_name)
+
         for job in jobs:
             job["sources"] = [scraper_name]
             all_jobs.append(job)

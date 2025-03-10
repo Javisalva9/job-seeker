@@ -1,4 +1,5 @@
 import requests
+import os
 from bs4 import BeautifulSoup
 from job_schema import JobFields
 from typing import List
@@ -12,7 +13,7 @@ def get_jobs(user):
     jobs: List[JobFields] = []
            
     for i, job_card in enumerate(soup.find_all('div', class_='panel-offer')):
-        if i >= 3:
+        if i >= 3 and os.environ.get("TEST_MODE") :
             break
         title = job_card.find('h3').a.text.strip()
         salary_tag = job_card.find('span', class_='salary')
@@ -39,17 +40,5 @@ def get_jobs(user):
             'salary_range': salary,
             'slug': 'N/A'
         })
-    
 
     return jobs
-
-
-if __name__ == '__main__':
-    job_listings = get_jobs()
-    for job in job_listings:
-        print(f"Title: {job['title']}")
-        print(f"description: {job['description']}")
-        print(f"Salary: {job['salary']}")
-        print(f"Link: {job['link']}")
-        print('-' * 20)
-    print(f"Soy concha, me voy a dormir")
