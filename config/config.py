@@ -27,7 +27,7 @@ Javi = User(
 
 
 class AIQueries:
-    MATCH_AND_RATE = """Analyze the developer profile and job description 
+    MATCH_AND_RATE = """Analyze the developer profile and job description
 and generate a direct match score and summary:
 
 1. DIRECT SCORING (0-10 scale):
@@ -57,5 +57,5 @@ JSON Output Format:
   ]
 }
 
-Maintain absolute brevity - maximum 15 words per bullet. 
+Maintain absolute brevity - maximum 15 words per bullet.
 Focus on factual matches/gaps without commentary."""

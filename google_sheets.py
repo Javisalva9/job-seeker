@@ -19,7 +19,7 @@ def save_to_google_sheets(jobs, spreadsheet_id):
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/drive",
     ]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_name("config/credentials.json", scope)
     client = gspread.authorize(creds)
 
     sheet = client.open_by_key(spreadsheet_id).sheet1  # Use the first sheet

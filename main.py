@@ -1,4 +1,4 @@
-from config import Miguel, Javi
+from config.config import Miguel, Javi
 import argparse
 import os
 from job_scraper import find_all
@@ -42,7 +42,7 @@ def main():
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/drive",
     ]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_name("config/credentials.json", scope)
     client = gspread.authorize(creds)
     sheet = client.open_by_key(user.spreadsheet_id).sheet1
     existing_entries = get_existing_entries(sheet)

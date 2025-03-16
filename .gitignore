@@ -1,2 +1,4 @@
 credentials.json
 .env
+__pychache__
+scrapers/__pychache__
