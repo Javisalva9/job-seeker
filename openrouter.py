@@ -50,9 +50,11 @@ def ask_openrouter(prompt):
 
 
 def evaluate_job_match(user, job):
+    work_preferences_str = json.dumps(user.work_preferences, indent=2)
+
     prompt = (
         f"{MATCH_AND_RATE_QUERY}\n\n"
-        f"Developer Profile:\n{user.work_preferences}\n\n"
+        f"Developer Profile:\n{work_preferences_str}\n\n"
         f"Job Description:\n{job.get('description', '')}\n\n"
         "Evaluate:"
     )
