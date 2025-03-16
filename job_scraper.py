@@ -2,6 +2,7 @@ import pkgutil
 import importlib
 import difflib
 
+
 def load_scrapers(package_name="scrapers"):
     scrapers = []
     package = importlib.import_module(package_name)
@@ -12,6 +13,7 @@ def load_scrapers(package_name="scrapers"):
             scraper_name = getattr(module, "SCRAPER_NAME", name)
             scrapers.append((scraper_name, module.get_jobs))
     return scrapers
+
 
 def find_all(user, package_name="scrapers"):
     scrapers = load_scrapers(package_name)
@@ -26,13 +28,16 @@ def find_all(user, package_name="scrapers"):
     unique_jobs = merge_duplicate_jobs(all_jobs)
     return unique_jobs
 
+
 def similar(a, b):
     return difflib.SequenceMatcher(None, a, b).ratio()
+
 
 def are_jobs_duplicates(job1, job2, threshold=0.8):
     title_sim = similar(job1.get("title", "").lower(), job2.get("title", "").lower())
     company_sim = similar(job1.get("company", "").lower(), job2.get("company", "").lower())
     return title_sim >= threshold and company_sim >= threshold
+
 
 def merge_duplicate_jobs(jobs, threshold=0.8):
     merged = []

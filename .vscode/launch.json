@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Scraper (Miguel)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.py",
+      "args": [
+        "--miguel"
+      ],
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Run Scraper (Javi)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.py",
+      "args": [
+        "--javi"
+      ],
+      "console": "integratedTerminal"
+    },
+
+  ]
+}

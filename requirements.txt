@@ -5,3 +5,6 @@ gspread
 oauth2client
 openai
 python-dotenv
+black
+flake8
+pre-commit
