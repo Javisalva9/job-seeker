@@ -1,0 +1,14 @@
+{
+  "python.formatting.provider": "black",
+  "python.linting.enabled": true,
+  "flake8.enabled": true,
+  "editor.formatOnSave": true,
+  "flake8.args": [
+    "--max-line-length=120"
+  ],
+  "[python]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  }
+}
