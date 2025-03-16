@@ -3,12 +3,14 @@ from dotenv import load_dotenv
 import openai
 import re
 import json
+from config import AIQueries
 
 # Load environment variables first
 load_dotenv()
 
 # Ensure your OpenRouter API key is set in your environment.
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+MATCH_AND_RATE_QUERY = AIQueries.MATCH_AND_RATE
 if not OPENROUTER_API_KEY:
     raise ValueError("❌ Missing OpenRouter API key! Set it in a .env file.")
 
@@ -45,15 +47,11 @@ def ask_openrouter(prompt):
     
     return _try_models(fallback_models)
 
-MATCH_AND_RATE_QUERY = (
-   "Analyze the developer profile and job description below. Perform the following tasks systematically:\n\n1. REQUIREMENT ANALYSIS:\n   - List all explicit requirements from the job description\n   - Identify preferred/bonus qualifications separately\n\n2. EXPERIENCE MAPPING:\n   - Match developer's skills/experience to required qualifications\n   - Map developer's skills to bonus qualifications\n   - Identify clear gaps\n\n3. SCORING (1-10 scale):\n   10 = All required + all bonus qualifications\n    7-9 = All required + some bonus\n    5-6 = All required qualifications\n    3-4 = Some required qualifications\n    1-2 = No relevant qualifications\n    (Adjust ±1 for years of experience relevance)\n\n4. Generate JSON output with:\n   - Numerical score based on above rubric\n   - 3-5 strictly concise bullet points\n   - Use format: [±] [Category] [Details] (e.g., [-] Cloud: Missing AWS experience)\n   - Prioritize most impactful factors\n\nJSON Output Format:\n{\n  \"rating\": [1-10],\n  \"comment\": [\n    \"✅ [Category] [Brief Detail]\",\n    \"❌ [Category] [Missing Requirement]\",\n    \"🤔 [Category] [Partial Match]\"\n  ]\n}\n\nMaintain absolute brevity - maximum 15 words per bullet. Focus on factual matches/gaps without commentary."
-)
-
 import re
 
-def evaluate_job_match(user, job, query=MATCH_AND_RATE_QUERY):
+def evaluate_job_match(user, job):
     prompt = (
-        f"{query}\n\n"
+        f"{MATCH_AND_RATE_QUERY}\n\n"
         f"Developer Profile:\n{user.work_preferences}\n\n"
         f"Job Description:\n{job.get('description', '')}\n\n"
         "Evaluate:"
@@ -70,10 +68,10 @@ def evaluate_job_match(user, job, query=MATCH_AND_RATE_QUERY):
     comment = "\n".join(comment)
     return rating, comment, model_used
 
-def evaluate_all_jobs(user, jobs, query=MATCH_AND_RATE_QUERY):
+def evaluate_all_jobs(user, jobs):
     evaluated_jobs = []
     for job in jobs:
-        rating, comment, model_used = evaluate_job_match(user, job, query)
+        rating, comment, model_used = evaluate_job_match(user, job, MATCH_AND_RATE_QUERY)
         job["score"] = rating
         job["comment"] = comment
         job["ai_model"] = model_used
