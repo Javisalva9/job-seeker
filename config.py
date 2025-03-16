@@ -11,12 +11,24 @@ Miguel = User(
     name="Miguel",
     search_query="nodejs",
     spreadsheet_id="1tRxmT2ZTvL5Zagh1hc44lFthQswrqNrh86uUVu636yw",
-    work_preferences="""Node.js backend developer with over 5 years of experience creating scalable APIs
-              in Node, TypeScript, and Nest.js.
-              I've used mongodb mainly but I've also used MYSQL. I've got some experience with: AWS, Logly, opensearch
-              and integrating IA APIs. Jenkins, GIT and scrum.
-              I prefer to focus on backend development rather than full-stack and definetly not Front end."
-              """,
+    work_preferences={
+        "technologies": {
+            "Node.js": "5 years",
+            "JavaScript": "5 years",
+            "MongoDB": "4 years",
+            "MySQL": "2 years",
+            "TypeScript": "3 years",
+            "Nest.js": "2 years",
+        },
+        "additional_skills": ["Scrum", "Loggly", "Jenkins", "Git", "OpenSearch"],
+        "work_type": ["remote", "hybrid"],
+        "preferences": {"focus": "backend development", "avoid": ["front-end"]},
+        "worker_location": {
+            "country": "Spain",
+        },
+        "expected_salary": "60.000€ - 100.000€",
+        "languages": ["Spanish", "English"],
+    },
 )
 Javi = User(
     name="Javi",
@@ -27,7 +39,7 @@ Javi = User(
 
 
 class AIQueries:
-    MATCH_AND_RATE = """Analyze the developer profile and job description 
+    MATCH_AND_RATE = """Analyze the developer profile and job description
 and generate a direct match score and summary:
 
 1. DIRECT SCORING (0-10 scale):
@@ -57,5 +69,5 @@ JSON Output Format:
   ]
 }
 
-Maintain absolute brevity - maximum 15 words per bullet. 
+Maintain absolute brevity - maximum 15 words per bullet.
 Focus on factual matches/gaps without commentary."""
