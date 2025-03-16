@@ -3,10 +3,10 @@ from dotenv import load_dotenv
 import openai
 import re
 import json
-from config import AIQueries
+from config.config import AIQueries
 
 # Load environment variables first
-load_dotenv()
+load_dotenv("config/.env")
 
 # Ensure your OpenRouter API key is set in your environment.
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
@@ -48,7 +48,6 @@ def ask_openrouter(prompt):
 
     return _try_models(fallback_models)
 
-import re
 
 def evaluate_job_match(user, job):
     prompt = (
@@ -69,10 +68,11 @@ def evaluate_job_match(user, job):
     comment = "\n".join(comment)
     return rating, comment, model_used
 
+
 def evaluate_all_jobs(user, jobs):
     evaluated_jobs = []
     for job in jobs:
-        rating, comment, model_used = evaluate_job_match(user, job, MATCH_AND_RATE_QUERY)
+        rating, comment, model_used = evaluate_job_match(user, job)
         job["score"] = rating
         job["comment"] = comment
         job["ai_model"] = model_used
