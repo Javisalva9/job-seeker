@@ -2,4 +2,4 @@ credentials.json
 .env
 __pycache__/
 */__pycache__/
-config/users.json
+config/user.json
