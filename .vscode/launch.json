@@ -2,15 +2,16 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run Scraper (Miguel)",
+      "name": "Run Scraper",
       "type": "debugpy",
       "request": "launch",
       "program": "${workspaceFolder}/main.py",
       "args": [
-        "--miguel"
+        "--test"
       ],
       "console": "integratedTerminal"
     },
+<<<<<<< HEAD
     {
       "name": "Run Scraper (Miguel, test)",
       "type": "debugpy",
@@ -32,5 +33,7 @@
       "console": "integratedTerminal"
     },
 
+=======
+>>>>>>> bd41673b2bbd5379e008637324acb076f73c5924
   ]
 }

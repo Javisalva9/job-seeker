@@ -1,4 +1,4 @@
-from config.config import Miguel, Javi
+from config.user_config import load_user_config
 import argparse
 import os
 from job_scraper import find_all
@@ -6,20 +6,6 @@ from google_sheets import save_to_google_sheets, get_existing_entries, migrate_e
 from oauth2client.service_account import ServiceAccountCredentials
 import gspread
 from openrouter import evaluate_all_jobs
-
-
-def get_user():
-    parser = argparse.ArgumentParser(description="Select a user for scraping.")
-    parser.add_argument("--miguel", action="store_true", help="Run the script for Miguel")
-    parser.add_argument("--javi", action="store_true", help="Run the script for Javi")
-    args, _ = parser.parse_known_args()  # Unpack tuple correctly
-
-    if args.miguel:
-        return Miguel
-    elif args.javi:
-        return Javi
-    else:
-        parser.error("❌ You must specify --miguel or --javi")
 
 
 def set_test_mode():
@@ -35,7 +21,7 @@ def set_test_mode():
 def main():
     print("🚀 Starting job search process!")
     set_test_mode()
-    user = get_user()
+    user = load_user_config()
     all_jobs = find_all(user)
     # Check existing entries before AI processing
     scope = [
