@@ -1,6 +1,7 @@
 from playwright.sync_api import sync_playwright
 from job_schema import JobFields
 import os
+import datetime
 
 
 def formatJobDetails(page, source) -> JobFields:
@@ -19,10 +20,18 @@ def formatJobDetails(page, source) -> JobFields:
         "company": source.get("company", "").strip(),
         "description": "",  # we'll fill this in
         "url": display_url,
+        "apply_url": apply_url,
         "applicants": source.get("number_of_applicants", 0),
         "locations": locations_str,
         "salary_range": source.get("salary_range", "").strip(),
         "slug": source.get("slug", "").strip(),
+        "sources": [],
+        "score": "",
+        "comment": "",
+        "ai_model": "",
+        "applied": False,
+        "interview_status": "pending",
+        "added_date": datetime.datetime.now().isoformat(),
     }
     job_el = page.query_selector("div.job")
     if job_el:

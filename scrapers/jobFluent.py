@@ -1,4 +1,5 @@
 import requests
+import datetime
 import os
 from bs4 import BeautifulSoup
 from job_schema import JobFields
@@ -18,7 +19,9 @@ def get_jobs(user):
         title = job_card.find("h3").a.text.strip()
         salary_tag = job_card.find("span", class_="salary")
         salary = salary_tag.text.strip() if salary_tag else "N/A"
-        link = "https://www.jobfluent.com" + job_card.find("div", class_="offer")["data-url"]
+        offer_div = job_card.find("div", class_="offer")
+        data_url = offer_div.get("data-url", "") if offer_div else ""
+        link = f"https://www.jobfluent.com{data_url}"
 
         responseDetail = requests.get(link)
         detailSoup = BeautifulSoup(responseDetail.text, "html.parser")
@@ -37,6 +40,13 @@ def get_jobs(user):
                 "locations": location,
                 "salary_range": salary,
                 "slug": "N/A",
+                "sources": [],
+                "score": "",
+                "comment": "",
+                "ai_model": "",
+                "applied": False,
+                "interview_status": "pending",
+                "added_date": datetime.datetime.now().isoformat(),
             }
         )
 
