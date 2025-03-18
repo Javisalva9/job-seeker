@@ -39,18 +39,13 @@ def are_jobs_duplicates(job1, job2, threshold=0.8):
     return title_sim >= threshold and company_sim >= threshold
 
 
-def merge_duplicate_jobs(jobs, threshold=0.8):
-    merged = []
-    for job in jobs:
-        found = False
-        for m_job in merged:
-            if are_jobs_duplicates(job, m_job, threshold):
-                # Merge sources lists if duplicate found.
-                for src in job.get("sources", []):
-                    if src not in m_job["sources"]:
-                        m_job["sources"].append(src)
-                found = True
-                break
-        if not found:
-            merged.append(job)
-    return merged
+def merge_duplicate_jobs(all_jobs):
+    merged_jobs = {}
+    for job in all_jobs:
+        key = (job["title"].lower(), job["company"].lower())
+        if key in merged_jobs:
+            # Merge sources while maintaining uniqueness
+            merged_jobs[key]["sources"] = list(set(merged_jobs[key]["sources"] + job["sources"]))
+        else:
+            merged_jobs[key] = job.copy()
+    return list(merged_jobs.values())

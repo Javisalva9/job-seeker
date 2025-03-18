@@ -12,6 +12,16 @@
       "console": "integratedTerminal"
     },
     {
+      "name": "Run Scraper (Miguel, test)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.py",
+      "args": [
+        "--miguel", "--test"
+      ],
+      "console": "integratedTerminal"
+    },
+    {
       "name": "Run Scraper (Javi)",
       "type": "debugpy",
       "request": "launch",

@@ -1,6 +1,7 @@
 from playwright.sync_api import sync_playwright
 from job_schema import JobFields
-import os 
+import os
+
 
 def formatJobDetails(page, source) -> JobFields:
     locations_raw = source.get("locations", [])
@@ -21,7 +22,7 @@ def formatJobDetails(page, source) -> JobFields:
         "applicants": source.get("number_of_applicants", 0),
         "locations": locations_str,
         "salary_range": source.get("salary_range", "").strip(),
-        "slug": source.get("slug", "").strip()
+        "slug": source.get("slug", "").strip(),
     }
     job_el = page.query_selector("div.job")
     if job_el:
@@ -36,8 +37,9 @@ def formatJobDetails(page, source) -> JobFields:
         job_info["description"] = "❌ Description not found"
     return job_info
 
+
 def get_jobs(user):
-    jobs_data = [] 
+    jobs_data = []
 
     def handle_response(response):
         if "jobsapi/_search" in response.url:
@@ -45,11 +47,11 @@ def get_jobs(user):
                 data = response.json()
                 hits = data.get("hits", {}).get("hits", [])
                 jobs_data.extend(hits)
-            except Exception as e:
+            except Exception:
                 print("Error parsing JSON:")
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(headless=False)
         page = browser.new_page()
         page.on("response", handle_response)
         search_url = f"https://www.workingnomads.com/jobs?location=anywhere,europe&tag={user.search_query}"
@@ -60,10 +62,10 @@ def get_jobs(user):
     workNomadsJobs = []
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(headless=False)
         page = browser.new_page()
         for i, hit in enumerate(jobs_data):
-            if i >= 3 and os.environ.get("TEST_MODE") :
+            if i >= 3 and os.environ.get("TEST_MODE"):
                 break
             source = hit.get("_source", {})
             slug = source.get("slug")

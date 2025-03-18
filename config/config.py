@@ -57,7 +57,6 @@ and generate a direct match score and summary:
      * Most significant matches
      * Most critical gaps
      * Key partial matches
-   - Use format: [±] [Category] [Details]
 
 JSON Output Format:
 {

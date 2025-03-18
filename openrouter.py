@@ -55,6 +55,7 @@ def evaluate_job_match(user, job):
     prompt = (
         f"{MATCH_AND_RATE_QUERY}\n\n"
         f"Developer Profile:\n{work_preferences_str}\n\n"
+        f"Job title:\n{job.get('description', '')}\n\n"
         f"Job Description:\n{job.get('description', '')}\n\n"
         "Evaluate:"
     )
