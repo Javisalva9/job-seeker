@@ -6,34 +6,18 @@
       "type": "debugpy",
       "request": "launch",
       "program": "${workspaceFolder}/main.py",
+      "args": [],
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Run Scraper on test Mode",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.py",
       "args": [
         "--test"
       ],
       "console": "integratedTerminal"
     },
-<<<<<<< HEAD
-    {
-      "name": "Run Scraper (Miguel, test)",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "${workspaceFolder}/main.py",
-      "args": [
-        "--miguel", "--test"
-      ],
-      "console": "integratedTerminal"
-    },
-    {
-      "name": "Run Scraper (Javi)",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "${workspaceFolder}/main.py",
-      "args": [
-        "--javi"
-      ],
-      "console": "integratedTerminal"
-    },
-
-=======
->>>>>>> bd41673b2bbd5379e008637324acb076f73c5924
   ]
 }
