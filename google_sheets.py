@@ -39,12 +39,27 @@ def migrate_entries(client, spreadsheet_id):
 
     # Migrate applied entries to interviewing
     for i, row in enumerate(reversed(active_rows), 1):
-        if row.get("Applied", False):
+        if row.get("Applied", True):
             interviewing_sheet.append_row(list(row.values()))
             active_sheet.delete_rows(active_sheet.row_count - i + 1)
 
     # Migrate old interviewing entries to archived
-    interviewing_rows = interviewing_sheet.get_all_records()
+    expected_headers = [
+        "Applied",
+        "Title",
+        "Company",
+        "Score",
+        "AI Comments",
+        "Salary Range",
+        "Locations",
+        "URL",
+        "Description",
+        "Applicants",
+        "Sources",
+        "AI Model",
+        "Added Date",
+    ]
+    interviewing_rows = interviewing_sheet.get_all_records(expected_headers=expected_headers)
     for i, row in enumerate(reversed(interviewing_rows), 1):
         added_date = datetime.datetime.fromisoformat(row.get("Added Date", ""))
         if (datetime.datetime.now() - added_date).days > 60:
@@ -68,31 +83,34 @@ def save_to_google_sheets(jobs, spreadsheet_id):
         except gspread.WorksheetNotFound:
             spreadsheet.add_worksheet(title=sheet_name, rows=1000, cols=26)
 
+    headers = [
+        "Applied",
+        "Title",
+        "Company",
+        "Score",
+        "AI Comments",
+        "Salary Range",
+        "Locations",
+        "URL",
+        "Description",
+        "Applicants",
+        "Sources",
+        "AI Model",
+        "Added Date",
+    ]
+
+    # Add headers to all sheets if empty.
+    for sheet_name in ["Active", "Archived", "Interviewing"]:
+        sheet = spreadsheet.worksheet(sheet_name)
+        is_sheet_empty = not sheet.get_all_values() or sheet.get_all_values() == [[]]
+        if is_sheet_empty:
+            sheet.append_row(headers)
+
     # Initialize active sheet reference
     sheet = spreadsheet.worksheet("Active")
 
     existing_entries = get_existing_entries(client, spreadsheet_id)
     new_jobs = [job for job in jobs if (job.get("title"), job.get("company")) not in existing_entries]
-
-    # Only add headers if sheet is empty
-    is_sheet_empty = not sheet.get_all_values() or sheet.get_all_values() == [[]]
-    if is_sheet_empty:
-        headers = [
-            "Applied",
-            "Title",
-            "Company",
-            "Score",
-            "AI Comments",
-            "Salary Range",
-            "Locations",
-            "URL",
-            "Description",
-            "Applicants",
-            "Sources",
-            "AI Model",
-            "Added Date",
-        ]
-        sheet.append_row(headers)
 
     rows = []
     for job in new_jobs:
