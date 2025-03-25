@@ -80,7 +80,7 @@ def evaluate_all_jobs(user, jobs):
         job["comment"] = comment
         job["ai_model"] = model_used
         evaluated_jobs.append(job)
-    return sorted(evaluated_jobs, key=lambda j: j["score"], reverse=True)
+    return sorted(evaluated_jobs, key=lambda j: j["score"], reverse=False)
 
 
 def clean_json_response(raw_response):

@@ -4,7 +4,7 @@ and generate a direct match score and summary:
 
 1. DIRECT SCORING (0-10 scale):
    0 = Location mismatch (candidate ineligible for job location)
-   1-2 = Poor match (few or no relevant qualifications)
+   1-2 = Title contains technology that user does not use
    3-4 = Partial match (some required qualifications)
    5-6 = Adequate match (all required qualifications)
    7-9 = Strong match (all required + some bonus)

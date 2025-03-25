@@ -60,7 +60,7 @@ def get_jobs(user):
                 print("Error parsing JSON:")
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         page.on("response", handle_response)
         search_url = f"https://www.workingnomads.com/jobs?location=anywhere,europe&tag={user.search_query}"
@@ -71,7 +71,7 @@ def get_jobs(user):
     workNomadsJobs = []
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         for i, hit in enumerate(jobs_data):
             if i >= 3 and os.environ.get("TEST_MODE"):

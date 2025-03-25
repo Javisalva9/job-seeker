@@ -1,7 +1,8 @@
 {
   "name": "Miguel",
   "search_query": "nodejs",
-  "spreadsheet_id": "1tRxmT2ZTvL5Zagh1hc44lFthQswrqNrh86uUVu636yw",
+  "spreadsheet_id": "YOUR_ACTUAL_SPREADSHEET_ID",
+
   "work_preferences": {
     "technologies": {
       "Node.js": "5 years",
@@ -18,24 +19,15 @@
       "Git",
       "OpenSearch"
     ],
-    "work_type": [
-      "remote",
-      "hybrid"
-    ],
+    "work_type": ["remote", "hybrid"],
     "preferences": {
       "focus": "backend development",
-      "avoid": [
-        "front-end",
-        "full-stack"
-      ]
+      "avoid": ["front-end"]
     },
     "worker_location": {
       "country": "Spain"
     },
     "expected_salary": "60.000€ - 100.000€",
-    "languages": [
-      "Spanish",
-      "English"
-    ]
+    "languages": ["Spanish", "English"]
   }
 }
