@@ -26,11 +26,11 @@ def get_jobs(user):
         job_cards = soup.find_all("div", class_="panel-offer")
 
         if not job_cards:
-            print(f"No se encontraron más ofertas en la página {page}. Saliendo...")
+            print(f"Didn't found any other offer on page {page}. Exiting...")
             break
 
         for i, job_card in enumerate(job_cards):
-            if i >= 3 and os.environ.get("TEST_MODE"):
+            if i >= 1 and os.environ.get("TEST_MODE"):
                 break
 
             try:  # Usamos un try except para que no se pare el programa si hay algun anuncio que da error
@@ -74,14 +74,14 @@ def get_jobs(user):
                         "apply_url": link,
                         "applicants": "N/A",
                         "locations": location,
-                        "salary_range": salary,
+                        "salary": salary,
                         "slug": "N/A",
                         "sources": [],
                         "score": "",
                         "comment": "",
                         "ai_model": "",
                         "applied": False,
-                        "interview_status": "pending",
+                        "interview": "pending",
                         "added_date": datetime.datetime.now().isoformat(),
                     }
                 )

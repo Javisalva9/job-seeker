@@ -15,7 +15,7 @@ def load_scrapers(package_name="scrapers"):
     return scrapers
 
 
-def find_all(user, package_name="scrapers"):
+def scrape_all(user, package_name="scrapers"):
     scrapers = load_scrapers(package_name)
     all_jobs = []
     for scraper_name, get_jobs in scrapers:

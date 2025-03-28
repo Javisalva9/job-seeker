@@ -19,7 +19,10 @@ def ask_openrouter(prompt):
     fallback_models = [
         "google/gemini-2.0-pro-exp-02-05:free",
         "google/gemini-2.0-flash-lite-preview-02-05:free",
-        "qwen/qwen2.5-vl-72b-instruct:free",
+        "qwen/qwen2.5-vl-72b-instruct:free" "nvidia/llama-3.1-nemotron-70b-instruct:free",
+        "google/gemini-2.0-flash-thinking-exp:free",
+        "nousresearch/deephermes-3-llama-3-8b-preview:free",
+        "nvidia/llama-3.1-nemotron-70b-instruct:free",
     ]
 
     def _try_models(models):
@@ -35,6 +38,12 @@ def ask_openrouter(prompt):
                 model=current_model,
                 messages=[{"role": "user", "content": prompt}],
             )
+
+            error_message = response.model_extra.get("error", {}).get("message", "No error message found")
+
+            if error_message == "Rate limit exceeded: free-models-per-day":
+                raise ValueError(error_message)
+
             content = response.choices[0].message.content
             parsed_response = clean_json_response(content)
             # Validate required fields exist
@@ -55,9 +64,8 @@ def evaluate_job_match(user, job):
     prompt = (
         f"{MATCH_AND_RATE_QUERY}\n\n"
         f"Developer Profile:\n{work_preferences_str}\n\n"
-        f"Job title:\n{job.get('description', '')}\n\n"
+        f"Job title:\n{job.get('title', '')}\n\n"
         f"Job Description:\n{job.get('description', '')}\n\n"
-        "Evaluate:"
     )
     try:
         response, model_used = ask_openrouter(prompt)

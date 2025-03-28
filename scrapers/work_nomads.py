@@ -23,14 +23,14 @@ def formatJobDetails(page, source) -> JobFields:
         "apply_url": apply_url,
         "applicants": source.get("number_of_applicants", 0),
         "locations": locations_str,
-        "salary_range": source.get("salary_range", "").strip(),
+        "salary": source.get("salary", "").strip(),
         "slug": source.get("slug", "").strip(),
         "sources": [],
         "score": "",
         "comment": "",
         "ai_model": "",
         "applied": False,
-        "interview_status": "pending",
+        "interview": "pending",
         "added_date": datetime.datetime.now().isoformat(),
     }
     job_el = page.query_selector("div.job")
@@ -74,7 +74,7 @@ def get_jobs(user):
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         for i, hit in enumerate(jobs_data):
-            if i >= 3 and os.environ.get("TEST_MODE"):
+            if i >= 1 and os.environ.get("TEST_MODE"):
                 break
             source = hit.get("_source", {})
             slug = source.get("slug")

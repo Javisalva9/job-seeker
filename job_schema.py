@@ -9,13 +9,13 @@ class JobFields(TypedDict):
     apply_url: str
     applicants: str
     locations: str
-    salary_range: str
+    salary: str
     sources: list[str]
     score: str
     comment: str
     ai_model: str
     applied: bool
-    interview_status: str  # New field: pending/scheduled/completed
+    interview: str
     slug: str
 
     # Internal tracking
